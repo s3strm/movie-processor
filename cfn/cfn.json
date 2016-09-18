@@ -1,0 +1,104 @@
+{
+  "AWSTemplateFormatVersion":"2010-09-09",
+  "Description":"Processing of incoming mp4 files",
+
+  "Parameters": {
+    "LogGroup" : {
+      "Description" : "The CloudWatch LogGroup to send ECS logs",
+      "Type" : "String"
+    }
+  },
+
+  "Resources": {
+    "Repository": {
+      "Type" : "AWS::ECR::Repository",
+      "Properties" : {
+        "RepositoryName" : { "Ref": "AWS::StackName" }
+      }
+    },
+
+    "IncomingMetadataTask": {
+      "Type": "AWS::ECS::TaskDefinition",
+      "Properties" : {
+        "ContainerDefinitions" : [{
+          "Name" : {"Ref": "AWS::StackName"},
+          "Memory" : "128",
+          "Image" : { "Fn::Join": [ "", [
+            { "Ref": "AWS::AccountId" },
+            ".dkr.ecr.",
+            { "Ref": "AWS::Region" },
+            ".amazonaws.com/",
+            { "Ref": "AWS::StackName" },
+            ":latest"
+          ]]},
+          "Essential": true,
+          "LogConfiguration": {
+            "LogDriver" : "awslogs",
+            "Options": {
+               "awslogs-group": { "Ref": "LogGroup" },
+               "awslogs-region": { "Ref": "AWS::Region" }
+            }
+          }
+        }],
+        "Volumes": []
+      }
+    },
+
+    "TaskRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [ "ec2.amazonaws.com" ]
+              },
+              "Action": [ "sts:AssumeRole" ]
+            }
+          ]
+        },
+        "Path": "/",
+        "Policies": [
+          {
+            "PolicyName": "ecs-service",
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "ecr:BatchGetImage",
+                    "ecr:GetDownloadUrlForLayer",
+                    "ecr:GetAuthorizationToken",
+                    "ecs:CreateCluster",
+                    "ecs:DeregisterContainerInstance",
+                    "ecs:DiscoverPollEndpoint",
+                    "ecs:Poll",
+                    "ecs:RegisterContainerInstance",
+                    "ecs:StartTelemetrySession",
+                    "ecs:Submit*",
+                    "logs:CreateLogStream",
+                    "logs:PutLogEvents"
+                  ],
+                  "Resource": "*"
+                }
+              ]
+            }
+          }
+        ]
+      }
+
+    }
+
+  },
+
+  "Outputs": {
+    "TaskDefinition": {
+      "Value": { "Ref": "IncomingMetadataTask" }
+    },
+
+    "LogGroup": {
+      "Value": { "Ref": "LogGroup" }
+    }
+  }
+}

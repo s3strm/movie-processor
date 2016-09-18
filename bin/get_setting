@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+file=$(dirname $0)/../settings.inc
+cat ${file} | grep ^$1= | cut -d= -f2
