@@ -1,4 +1,4 @@
-# s3strm/ecs-incoming-metadata
+# s3strm/mp4meta
 
-Begin processing an incoming mp4 file
+s3 event -> lambda -> ecs -> process -> video.json
 

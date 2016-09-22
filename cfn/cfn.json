@@ -2,13 +2,6 @@
   "AWSTemplateFormatVersion":"2010-09-09",
   "Description":"Processing of incoming mp4 files",
 
-  "Parameters": {
-    "LogGroup" : {
-      "Description" : "The CloudWatch LogGroup to send ECS logs",
-      "Type" : "String"
-    }
-  },
-
   "Resources": {
     "Repository": {
       "Type" : "AWS::ECR::Repository",
@@ -35,7 +28,7 @@
           "LogConfiguration": {
             "LogDriver" : "awslogs",
             "Options": {
-               "awslogs-group": { "Ref": "LogGroup" },
+               "awslogs-group": { "Ref": "AWS::StackName" },
                "awslogs-region": { "Ref": "AWS::Region" }
             }
           }
@@ -98,7 +91,7 @@
     },
 
     "LogGroup": {
-      "Value": { "Ref": "LogGroup" }
+      "Value": { "Ref": "AWS::StackName" }
     }
   }
 }
