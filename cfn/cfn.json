@@ -2,6 +2,14 @@
   "AWSTemplateFormatVersion":"2010-09-09",
   "Description":"Processing of incoming mp4 files",
 
+
+  "Parameters": {
+    "CodeBucket": {
+      "Description": "The bucket where the Lambda function can be found",
+      "Type": "String"
+    }
+  },
+
   "Resources": {
     "Repository": {
       "Type" : "AWS::ECR::Repository",
@@ -81,8 +89,49 @@
         ]
       }
 
-    }
+    },
 
+    "KickstarterRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version" : "2012-10-17",
+          "Statement": [{
+            "Effect": "Allow",
+            "Principal": { "Service": "lambda.amazonaws.com" },
+            "Action": "sts:AssumeRole"
+          }]
+        },
+        "Path": "/",
+        "Policies": [{
+          "PolicyName": { "Fn::Join": [ "-", [
+            { "Ref": "AWS::StackName" }, "kickstarter"
+          ]]},
+          "PolicyDocument": {
+            "Statement": [
+              {
+                "Effect": "Allow",
+                "Action": [
+                  "logs:CreateLogGroup",
+                  "logs:CreateLogStream",
+                  "logs:PutLogEvents"
+                ],
+                "Resource": "arn:aws:logs:*:*:*"
+              },
+              {
+                "Effect": "Allow",
+                "Action": [ "s3:*" ],
+                "Resource": {
+                  "Fn::Join": [ "", [
+                    "arn:aws:s3:::", { "Ref": "CodeBucket" }, "/*" ]
+                  ]
+                }
+              }
+            ]
+          }
+        }]
+      }
+    }
   },
 
   "Outputs": {
@@ -92,6 +141,13 @@
 
     "LogGroup": {
       "Value": { "Ref": "AWS::StackName" }
+    },
+
+    "KickstarterRoleArn": {
+      "Value": { "Fn::GetAtt": [ "KickstarterRole", "Arn" ] },
+      "Export" : {
+        "Name" : "s3strm-Mp4metaKickstarterRoleArn"
+      }
     }
   }
 }

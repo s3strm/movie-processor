@@ -1,23 +1,32 @@
-STACK_NAME = $(shell ../bin/get_setting MOVIE_MP4META_STACK_NAME)
+STACK_NAME := $(shell ../bin/get_setting MOVIE_MP4META_STACK_NAME)
 TEMPLATE = "file://./cfn.json"
 LOG_GROUP_NAME = $(STACK_NAME)
+CODE_BUCKET := $(shell ../bin/get_setting GENERAL_BUCKET)
 
-ACTION ?= $(shell aws cloudformation describe-stacks --stack-name $(STACK_NAME) &>/dev/null && echo update || echo create)
+.PHONY: clean log_group stack
 
-LOGGROUP_EXISTS = $(shell [[ -z $$(aws logs describe-log-groups --log-group-name-prefix $(LOG_GROUP_NAME) --query "logGroups[]" --output text) ]] && echo false || echo true )
+stack: log_group parameters.txt
+	$(eval ACTION ?= $(shell ../bin/cloudformation_action $(STACK_NAME)))
+	aws cloudformation $(ACTION)-stack            \
+	  --stack-name "$(STACK_NAME)"                 \
+	  --template-body "$(TEMPLATE)"                \
+	  --parameters "$(shell cat ./parameters.txt)" \
+	  --capabilities CAPABILITY_IAM                \
+	  2>&1
+	@aws cloudformation wait stack-$(ACTION)-complete \
+	  --stack-name $(STACK_NAME)
 
 log_group:
+	$(eval LOGGROUP_EXISTS = $(shell [[ -z $$(aws logs describe-log-groups --log-group-name-prefix $(LOG_GROUP_NAME) --query "logGroups[]" --output text) ]] && echo false || echo true ))
 ifeq "$(LOGGROUP_EXISTS)" "false"
 	aws logs create-log-group              \
 		--log-group-name $(LOG_GROUP_NAME) \
 		--region ${AWS_DEFAULT_REGION}
 endif
 
-stack:
-	@aws cloudformation $(ACTION)-stack            \
-	  --stack-name "$(STACK_NAME)"                 \
-	  --template-body "$(TEMPLATE)"                \
-	  --capabilities CAPABILITY_IAM                \
-	  2>&1
-	@aws cloudformation wait stack-$(ACTION)-complete \
-	  --stack-name $(STACK_NAME)
+parameters.txt: clean
+	$(eval PARAM_STR := 'ParameterKey=%s,ParameterValue=%s ')
+	@printf $(PARAM_STR) "CodeBucket" $(CODE_BUCKET) >> parameters.txt
+
+clean:
+	@rm -f ./parameters.txt
