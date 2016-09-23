@@ -1,0 +1,3 @@
+[submodule "ecs-kickstarter"]
+	path = ecs-kickstarter
+	url = git@github.com:s3strm/ecs-kickstarter.git
