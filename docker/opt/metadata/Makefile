@@ -1,48 +1,45 @@
 KEY = s3://your_input_bucket/tt123445/video.mp4
-OUTPUT_DIR = s3://$(shell dirname $$(echo $(KEY) | cut -d/ -f2-))
+OUTPUT_DIR = s3:/$(shell dirname $$(echo $(KEY) | cut -d/ -f2-))
 IMDB_ID = $(shell basename $(OUTPUT_DIR))
 
-.PHONY = clean width height duration in_s3 all upload delete_input
+.PHONY = clean width height duration in_s3 all upload
 
-all: upload delete_input
+all: clean upload
 
 metadata.txt: width height duration
 
 clean:
-	@rm -f video.mp4 metadata.txt frame.png
+	-@aws s3 rm $(OUTPUT_DIR)/frame.jpeg
+	-@aws s3 rm $(OUTPUT_DIR)/metadata.txt
+	-@rm -f video.mp4 metadata.txt frame.jpeg
 
 video.mp4:
 	@echo "fetching video"
-	@aws s3 cp $(INPUT) video.mp4
+	@aws s3 cp $(KEY) video.mp4
 
-frame.png: video.mp4
+frame.jpeg: video.mp4
 	@echo "extracting frame"
-	@rm -f frame.png
-	@ffmpeg -i video.mp4 \
-	  -ss 00:00:03       \
-	  -vframes 1         \
-	  frame.png          \
-	  &> /dev/null
+	ffmpeg -ss 30 -i video.mp4 -qscale:v 2 -vframes 1 frame.jpeg
 
-width: frame.png
+width: frame.jpeg
 ifeq ("$(wildcard metadata.txt)","metadata.txt")
 	@sed -i '/^width:/d' metadata.txt
 endif
 	@echo "getting width"
 	@printf 'width:' >> metadata.txt
-	@identify -verbose "frame.png" \
+	@identify -verbose "frame.jpeg"        \
 	  | awk '/Geometry:/ { print $$2 }'   \
 	  | tr 'x+' ' '                       \
 	  | awk '{ print $$1 }'               \
 	  >> metadata.txt
 
-height: frame.png
+height: frame.jpeg
 ifeq ("$(wildcard metadata.txt)","metadata.txt")
 	@sed -i '/^height:/d' metadata.txt
 endif
 	@echo "getting height"
 	@printf 'height:' >> metadata.txt
-	@identify -verbose "frame.png" \
+	@identify -verbose "frame.jpeg" \
 	  | awk '/Geometry:/ { print $$2 }'   \
 	  | tr 'x+' ' '                       \
 	  | awk '{ print $$2 }'               \
@@ -59,11 +56,7 @@ endif
 	  | cut -d. -f1                            \
 	  >> metadata.txt
 
-upload: video.mp4 metadata.txt frame.png
+upload: video.mp4 metadata.txt frame.jpeg
 	@echo "writing output to s3"
 	@aws s3 cp metadata.txt $(OUTPUT_DIR)/metadata.txt
-	@aws s3 cp frame.png $(OUTPUT_DIR)/frame.png
-
-delete_input:
-	@echo "deleting input file from s3"
-	@aws s3 rm $(INPUT)
+	@aws s3 cp frame.jpeg $(OUTPUT_DIR)/frame.jpeg

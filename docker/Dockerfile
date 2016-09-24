@@ -15,6 +15,6 @@ WORKDIR /opt/metadata
 ENV INPUT /dev/null
 ENV BUCKET null
 ENTRYPOINT [ "make" ]
-CMD [ "all" ]
+CMD [ "-e", "all" ]
 
 # vim: ft=dockerfile
