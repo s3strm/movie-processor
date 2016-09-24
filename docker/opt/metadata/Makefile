@@ -1,7 +1,7 @@
-#INPUT = s3://your_input_bucket/incoming/$(IMDB_ID).mp4
-#BUCKET = your_output_bucket
-IMDB_ID = $(shell basename $(INPUT) .mp4)
-OUTPUT_DIR = s3://$(BUCKET)/processed/$(IMDB_ID)
+KEY = s3://your_input_bucket/tt123445/video.mp4
+OUTPUT_DIR = s3://$(shell dirname $$(echo $(KEY) | cut -d/ -f2-))
+IMDB_ID = $(shell basename $(OUTPUT_DIR))
+
 .PHONY = clean width height duration in_s3 all upload delete_input
 
 all: upload delete_input
@@ -61,7 +61,6 @@ endif
 
 upload: video.mp4 metadata.txt frame.png
 	@echo "writing output to s3"
-	@aws s3 cp video.mp4 $(OUTPUT_DIR)/video.mp4
 	@aws s3 cp metadata.txt $(OUTPUT_DIR)/metadata.txt
 	@aws s3 cp frame.png $(OUTPUT_DIR)/frame.png
 
