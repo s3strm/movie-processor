@@ -1,3 +1,3 @@
 deploy:
-	make -C cfn stack
-	make -C docker push
+	-@make -C cfn stack
+	@make -C docker push

@@ -1,5 +1,5 @@
-ECR_REPO = $(shell ../bin/get_setting ECR_REPO)
-ECR_PATH := $(shell aws ecr get-login | awk -F/ '{ print $$NF }')/$(ECR_REPO):latest
+ECR_REPO = $(shell ../bin/get_setting MOVIE_MP4META_ECR_REPO)
+ECR_PATH ?= $(shell aws ecr get-login | awk -F/ '{ print $$NF }')/$(ECR_REPO):latest
 
 push: tag
 	$(shell aws ecr get-login)
