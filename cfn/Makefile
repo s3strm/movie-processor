@@ -17,12 +17,8 @@ stack: log_group parameters.txt
 	  --stack-name $(STACK_NAME)
 
 log_group:
-	$(eval LOGGROUP_EXISTS = $(shell [[ -z $$(aws logs describe-log-groups --log-group-name-prefix $(LOG_GROUP_NAME) --query "logGroups[]" --output text) ]] && echo false || echo true ))
-ifeq "$(LOGGROUP_EXISTS)" "false"
-	aws logs create-log-group              \
-		--log-group-name $(LOG_GROUP_NAME) \
-		--region ${AWS_DEFAULT_REGION}
-endif
+	-@aws logs create-log-group              \
+		--log-group-name $(LOG_GROUP_NAME)
 
 parameters.txt: clean
 	$(eval PARAM_STR := 'ParameterKey=%s,ParameterValue=%s ')
