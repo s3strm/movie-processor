@@ -126,6 +126,11 @@
                     "arn:aws:s3:::", { "Ref": "CodeBucket" }, "/*" ]
                   ]
                 }
+              },
+              {
+                "Effect": "Allow",
+                "Action": [ "ecs:RunTask" ],
+                "Resource": [ "arn:aws:ecs:::*" ]
               }
             ]
           }
