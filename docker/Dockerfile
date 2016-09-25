@@ -12,8 +12,7 @@ RUN apt-get update && apt-get install --force-yes -y \
 
 ADD opt/ /opt
 WORKDIR /opt/metadata
-ENV INPUT /dev/null
-ENV BUCKET null
+ENV KEY null
 ENTRYPOINT [ "make" ]
 CMD [ "-e", "all" ]
 

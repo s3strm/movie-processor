@@ -4,7 +4,7 @@ IMDB_ID = $(shell basename $(OUTPUT_DIR))
 
 .PHONY = clean width height duration in_s3 all upload
 
-all: clean upload
+all: upload
 
 metadata.txt: width height duration
 
@@ -14,8 +14,8 @@ clean:
 	-@rm -f video.mp4 metadata.txt frame.jpeg
 
 video.mp4:
-	@echo "fetching video"
-	@aws s3 cp $(KEY) video.mp4
+	echo "fetching video"
+	aws s3 cp $(KEY) video.mp4
 
 frame.jpeg: video.mp4
 	@echo "extracting frame"
@@ -60,3 +60,4 @@ upload: video.mp4 metadata.txt frame.jpeg
 	@echo "writing output to s3"
 	@aws s3 cp metadata.txt $(OUTPUT_DIR)/metadata.txt
 	@aws s3 cp frame.jpeg $(OUTPUT_DIR)/frame.jpeg
+	@rm -f video.mp4

@@ -23,7 +23,7 @@
       "Properties" : {
         "ContainerDefinitions" : [{
           "Name" : {"Ref": "AWS::StackName"},
-          "Memory" : "128",
+          "Memory" : "384",
           "Image" : { "Fn::Join": [ "", [
             { "Ref": "AWS::AccountId" },
             ".dkr.ecr.",

@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+dir=$(dirname $0)
+
 _usage() {
   echo "$0 <s3_key>" >&2
 }
@@ -6,9 +8,9 @@ _usage() {
 [[ $# -ne 1 ]] && _usage && exit 1
 
 KEY=$1
-STACK_NAME=$(../bin/get_setting MOVIE_MP4META_STACK_NAME)
-DOCKER_STACK_NAME=$(../bin/get_setting DOCKER_STACK_NAME)
-CONTAINER_NAME=$(../bin/get_setting MOVIE_MP4META_ECR_REPO)
+STACK_NAME=$(${dir}/../bin/get_setting MOVIE_MP4META_STACK_NAME)
+DOCKER_STACK_NAME=$(${dir}/../bin/get_setting DOCKER_STACK_NAME)
+CONTAINER_NAME=$(${dir}/../bin/get_setting MOVIE_MP4META_ECR_REPO)
 
 TASK_DEFINITION_ARN=$(
   aws cloudformation describe-stacks \
