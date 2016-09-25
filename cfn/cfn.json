@@ -130,7 +130,7 @@
               {
                 "Effect": "Allow",
                 "Action": [ "ecs:RunTask" ],
-                "Resource": [ "arn:aws:ecs:::*" ]
+                "Resource": [ "arn:aws:ecs:::task-definition/s3strm*" ]
               }
             ]
           }
