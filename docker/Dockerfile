@@ -14,6 +14,6 @@ ADD opt/ /opt
 WORKDIR /opt/metadata
 ENV KEY null
 ENTRYPOINT [ "make" ]
-CMD [ "-e", "all" ]
+CMD [ "-e", "clean", "all" ]
 
 # vim: ft=dockerfile
