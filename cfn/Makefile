@@ -1,11 +1,17 @@
 STACK_NAME := $(shell ../bin/get_setting MOVIE_MP4META_STACK_NAME)
-TEMPLATE = "file://./cfn.json"
+TEMPLATE = "file://./ffprobe.json"
 LOG_GROUP_NAME = $(STACK_NAME)
 CODE_BUCKET := $(shell ../bin/get_setting GENERAL_BUCKET)
 
-.PHONY: clean log_group stack
+.PHONY: clean log_group stack run build
 
-stack: log_group parameters.txt
+run: build
+	docker run ${TAG}
+
+build:
+	docker build . -t ${TAG}
+
+deploy: log_group parameters.txt
 	$(eval ACTION ?= $(shell ../bin/cloudformation_action $(STACK_NAME)))
 	aws cloudformation $(ACTION)-stack            \
 	  --stack-name "$(STACK_NAME)"                 \

@@ -1,4 +1,4 @@
-# s3strm/mp4meta
+# s3strm/ffprobe
 
-s3 event -> lambda -> ecs -> process -> video.json
+s3 event -> lambda -> ffprobe.json
 
