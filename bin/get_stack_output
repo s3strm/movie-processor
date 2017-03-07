@@ -2,7 +2,15 @@
 STACK_NAME=$1
 OUTPUT_NAME=$2
 
-aws cloudformation describe-stacks                                          \
-  --stack-name "${STACK_NAME}"                                              \
-  --query 'Stacks[].Outputs[?OutputKey==`'${OUTPUT_NAME}'`].OutputValue[]'  \
-  --output "text"
+if [[ $# -eq 2 ]]; then
+  query='Stacks[].Outputs[?OutputKey==`'${OUTPUT_NAME}'`].OutputValue[]'
+  output="text"
+else
+  query='Stacks[].Outputs[]'
+  output="json"
+fi
+
+aws cloudformation describe-stacks  \
+  --stack-name "${STACK_NAME}"      \
+  --query ${query}                  \
+  --output "${output}"

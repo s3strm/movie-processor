@@ -1,2 +1,3 @@
 settings.inc
 cfn/parameters.txt
+cfn/lambda/*

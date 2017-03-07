@@ -1,28 +1,25 @@
-STACK_NAME := $(shell ../bin/get_setting MOVIE_MP4META_STACK_NAME)
-TEMPLATE = "file://./cfn.json"
-LOG_GROUP_NAME = $(STACK_NAME)
-CODE_BUCKET := $(shell ../bin/get_setting GENERAL_BUCKET)
+STACK_NAME = s3strm-ffprobe
+STACK_TEMPLATE = "file://./ffprobe.yaml"
 
-.PHONY: clean log_group stack
+LAMBDA_BUCKET := $(shell ../bin/get_stack_output s3strm-settings SettingsBucket)
+LAMBDA_KEY = lambda/ffprobe-${LAMBDA_MD5}.zip
+LAMBDA_MD5 = $(shell find ./lambda -iname \*.py -print0 | xargs -0 cat | md5)
 
-stack: log_group parameters.txt
+deploy: upload_lambda
 	$(eval ACTION ?= $(shell ../bin/cloudformation_action $(STACK_NAME)))
-	aws cloudformation $(ACTION)-stack            \
-	  --stack-name "$(STACK_NAME)"                 \
-	  --template-body "$(TEMPLATE)"                \
-	  --parameters "$(shell cat ./parameters.txt)" \
+	aws cloudformation ${ACTION}-stack            \
+	  --stack-name "${STACK_NAME}"                 \
+	  --template-body "${STACK_TEMPLATE}"                \
+	  --parameters \
+	    ParameterKey=CodeKey,ParameterValue=${LAMBDA_KEY} \
 	  --capabilities CAPABILITY_IAM                \
 	  2>&1
 	@aws cloudformation wait stack-$(ACTION)-complete \
 	  --stack-name $(STACK_NAME)
 
-log_group:
-	-@aws logs create-log-group              \
-		--log-group-name $(LOG_GROUP_NAME)
-
-parameters.txt: clean
-	$(eval PARAM_STR := 'ParameterKey=%s,ParameterValue=%s ')
-	@printf $(PARAM_STR) "CodeBucket" $(CODE_BUCKET) >> parameters.txt
-
-clean:
-	@rm -f ./parameters.txt
+upload_lambda:
+ifeq ( $(shell aws s3 ls s3://${LAMBDA_BUCKET}/${LAMBDA_KEY}),"" )
+	@rm -f ./lambda/latest.zip  # make a new zip, but don't clean
+	@make -C lambda latest.zip
+	@aws s3 cp lambda/latest.zip s3://${LAMBDA_BUCKET}/${LAMBDA_KEY}
+endif
