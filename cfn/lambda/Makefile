@@ -1,2 +1,2 @@
 requirements:
-	pip install boto -t .
+	pip install boto -t ./
