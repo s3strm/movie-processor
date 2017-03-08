@@ -5,6 +5,9 @@ LAMBDA_BUCKET := $(shell ../bin/get_stack_output s3strm-settings SettingsBucket)
 LAMBDA_KEY = lambda/ffprobe-${LAMBDA_MD5}.zip
 LAMBDA_MD5 = $(shell find ./lambda -iname \*.py -print0 | xargs -0 cat | md5)
 LAMBDA_KEY_EXISTS ?= $(shell aws s3 ls "s3://${LAMBDA_BUCKET}/${LAMBDA_KEY}")
+export AWS_SECRET_ACCESS_KEY
+export AWS_DEFAULT_REGION
+export AWS_ACCESS_KEY_ID
 
 DOCKER_TAG = s3strm-ffprobe
 
@@ -33,4 +36,8 @@ docker_image:
 	docker build . -t ${DOCKER_TAG}
 
 test: docker_image
-	docker run ${DOCKER_TAG}
+	docker run \
+		-e AWS_SECRET_ACCESS_KEY \
+		-e AWS_DEFAULT_REGION \
+		-e AWS_ACCESS_KEY_ID \
+		${DOCKER_TAG}
