@@ -8,7 +8,7 @@ from subprocess import PIPE
 from re import sub
 
 def _ffprobe(imdb_id, url):
-    print("Generating data for {}".format(url))
+    print("Generating data for {}".format(imdb_id))
     ffprobe_path = os.getcwd() + "/bin/ffprobe"
     cmd = [ ffprobe_path, "-i", url, "-show_entries", "stream" ]
     p = Popen(cmd, stdout=PIPE, stderr=PIPE)
@@ -46,7 +46,7 @@ def lambda_handler(event, context):
             ffprobe_key = "{}/ffprobe.txt".format(imdb_id)
             ffprobe_body = _ffprobe(imdb_id, url)
             _upload(bucket, ffprobe_key, ffprobe_body)
-            return True
+    return True
 
 if __name__ == "__main__":
     object1 = "{ 's3': { 'object': { 'key': 'tt2294629' } } }"
