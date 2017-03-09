@@ -7,11 +7,9 @@ LAMBDA_ARN=$(
     --output "text"
 )
 
-for imdb_id in "$@"; do
-  payload="$($(dirname $0)/sample_event ${imdb_id})"
-  aws lambda invoke \
-    --function-name "${LAMBDA_ARN}" \
-    --invocation-type "Event" \
-    --payload "${payload}" \
-    /dev/null
-done
+payload="$($(dirname $0)/sample_event $@)"
+aws lambda invoke \
+  --function-name "${LAMBDA_ARN}" \
+  --invocation-type "Event" \
+  --payload "${payload}" \
+  /dev/null
