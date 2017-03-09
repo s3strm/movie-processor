@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+STACK_NAME="s3strm-ffprobe"
+LAMBDA_ARN=$(
+  aws cloudformation describe-stacks \
+    --stack-name "${STACK_NAME}" \
+    --query 'Stacks[].Outputs[?OutputKey==`LambdaArn`].OutputValue' \
+    --output "text"
+)
+
+for imdb_id in "$@"; do
+  payload="$($(dirname $0)/sample_event ${imdb_id})"
+  aws lambda invoke \
+    --function-name "${LAMBDA_ARN}" \
+    --invocation-type "Event" \
+    --payload "${payload}" \
+    /dev/null
+done
