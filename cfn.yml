@@ -32,8 +32,12 @@ Resources:
       Code:
         S3Bucket: !ImportValue s3strm-settings-bucket
         S3Key: !Ref OMDbPostersCodeKey
+      Environment:
+        Variables:
+          OMDB_API_KEY: !ImportValue s3strm-settings-omdb-api-key
+          POSTER_HEIGHT: 900
       Description : Get the posters from the OMDB API
-      FunctionName : s3strm-posters
+      FunctionName : s3strm-omdb-posters
       Handler : poster.lambda_handler
       MemorySize : 128
       Role : !GetAtt Role.Arn
