@@ -1,12 +1,15 @@
 SETTINGS_BUCKET := $(shell aws cloudformation list-exports --query 'Exports[?Name==`s3strm-settings-bucket`].Value' --output text)
-LAMBDA_MD5 = $(shell find . -iname \*.py -print0 | xargs -0 cat | md5)
+
+ZIPABLE_FILES = $(shell find . -mindepth 1 ! -iname \*.zip ! -name Makefile ! -name setup.cfg ! -name .gitignore ! -path ./dateutil\* ! -path ./boto\* ! -path ./concurrent\* ! -path ./dateutil ! -path ./docutils\* ! -path ./futures\* ! -path ./jmespath\* ! -path ./python_dateutil\* ! -path ./s3transfer\* ! -path ./six\*)
+
+LAMBDA_MD5 = $(shell cat ${ZIPABLE_FILES} | md5)
 LAMBDA_KEY = lambda/kodi_strm/${LAMBDA_MD5}.zip
 LAMBDA_KEY_EXISTS := $(shell aws s3 ls "s3://${SETTINGS_BUCKET}/${LAMBDA_KEY}" &>/dev/null; echo $$?)
 
 .PHONY: clean upload lambda_key
 
 latest.zip: boto3
-	@zip -9rq latest.zip $(shell find . -mindepth 1 ! -iname \*.zip ! -name Makefile ! -name setup.cfg)
+	@zip -9rq latest.zip ${ZIPABLE_FILES}
 
 boto3:
 	pip install boto3 -t ./ --upgrade
