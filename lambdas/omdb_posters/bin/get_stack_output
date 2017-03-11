@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+STACK_NAME=$1
+OUTPUT_NAME=$2
+
+aws cloudformation describe-stacks                                          \
+  --stack-name "${STACK_NAME}"                                              \
+  --query 'Stacks[].Outputs[?OutputKey==`'${OUTPUT_NAME}'`].OutputValue[]'  \
+  --output "text"

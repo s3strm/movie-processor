@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+if aws cloudformation describe-stacks --stack-name $1 &>/dev/null; then
+  echo update
+else
+  echo create
+fi
