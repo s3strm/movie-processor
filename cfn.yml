@@ -46,7 +46,7 @@ Resources:
         S3Key: !Ref OMDbPostersCodeKey
       Environment:
         Variables:
-          OMDB_API_KEY: !ImportValue s3strm-settings-omdb-api-key
+          OMDB_API_KEY: !ImportValue s3strm-omdb-api-key
           POSTER_HEIGHT: 900
       Description : Get the posters from the OMDB API
       FunctionName : s3strm-omdb-posters
@@ -84,7 +84,7 @@ Resources:
       Environment:
         Variables:
           MOVIES_BUCKET: !ImportValue s3strm-movies-bucket
-          API_GATEWAY_URL: !ImportValue s3strm-settings-api-gateway-url
+          API_GATEWAY_URL: !ImportValue s3strm-api-gateway-url
       Description : Generate a kodi.strm file
       FunctionName : s3strm-kodi-strm
       Handler : strm.lambda_handler
