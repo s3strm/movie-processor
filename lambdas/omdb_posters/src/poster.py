@@ -2,11 +2,17 @@ from __future__ import print_function
 import ast
 import boto3
 import json
+import os
 import requests
 
 def poster(imdb_id):
+    if imdb_id == "tt0000000":
+        fetch_imdb_id = "tt0087332"
+    else:
+        fetch_imdb_id = imdb_id
+
     url = "http://img.omdbapi.com/?i={}&apikey={}&h={}".format(
-            imdb_id,
+            fetch_imdb_id,
             os.environ["OMDB_API_KEY"],
             os.environ["POSTER_HEIGHT"],
             )
@@ -18,7 +24,11 @@ def poster(imdb_id):
     body = req.content
     key = '{}/poster.jpg'.format(imdb_id)
     s3 = boto3.resource('s3')
-    s3.Bucket(settings.bucket).put_object(Key=key, Body=body, ACL="public-read")
+    s3.Bucket(os.environ["MOVIES_BUCKET"]).put_object(
+            Key=key,
+            Body=body,
+            ACL="public-read"
+            )
 
 def lambda_handler(event, context):
     for record in event["Records"]:
@@ -29,7 +39,6 @@ def lambda_handler(event, context):
             poster(imdb_id)
 
     return True
-
 
 if __name__ == "__main__":
     event = { "Records": [ {"Sns": { "Message": "tt2294629 tt0780622 tt0427312"} } ] }

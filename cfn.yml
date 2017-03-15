@@ -48,6 +48,7 @@ Resources:
         Variables:
           OMDB_API_KEY: !ImportValue s3strm-omdb-api-key
           POSTER_HEIGHT: 900
+          MOVIES_BUCKET: !ImportValue s3strm-movies-bucket
       Description : Get the posters from the OMDB API
       FunctionName : s3strm-omdb-posters
       Handler : poster.lambda_handler
