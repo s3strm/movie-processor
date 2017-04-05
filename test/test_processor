@@ -38,8 +38,18 @@ function test_poster() {
 }
 
 function test_kodi_nfo() {
-  meta="something"
-  assertEquals 'exists' "${meta}"  "$(kodi_nfo ${imdb_id} | file -)"
+  content="$(kodi_nfo ${imdb_id})"
+  assertTrue 'has id'        'echo "${content}" | grep "<id>tt0000000</id>"'
+  assertTrue 'has year'      'echo "${content}" | grep "<year>1894</year>"'
+  assertTrue 'has runtime'   'echo "${content}" | grep "<runtime>1 min</runtime>"'
+  assertTrue 'has thumb'     'echo "${content}" | grep "<thumb>http://s3-ap-southeast-2.amazonaws.com/s3strm-movies/tt0000000/poster.jpeg</thumb>"'
+  assertTrue 'has rating'    'echo "${content}" | grep "<rating>5.9</rating>"'
+  assertTrue 'has genre'     'echo "${content}" | grep "<genre>Documentary</genre><genre>Short</genre>"'
+  assertTrue 'has director'  'echo "${content}" | grep "<director>William K.L. Dickson</director>"'
+  assertTrue 'has actor'     'echo "${content}" | grep "<actor>Carmencita</actor>"'
+  assertTrue 'has width'     'echo "${content}" | grep "<width>1280</width>"'
+  assertTrue 'has height'    'echo "${content}" | grep "<height>720</height>"'
+  assertTrue 'has duration'  'echo "${content}" | grep "<duration>0</duration>"'
 }
 
 source $(dirname $0)/shunit/src/shunit2
