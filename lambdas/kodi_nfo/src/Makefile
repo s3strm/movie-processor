@@ -25,7 +25,7 @@ clean:
 		./jmespath* \
 		./python_dateutil* \
 		./s3transfer* \
-		./six* \
+		./six*
 	rm -f latest.zip
 
 upload: latest.zip
