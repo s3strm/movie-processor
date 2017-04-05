@@ -19,6 +19,11 @@ function kodi_strm() {
   aws s3 cp s3://${MOVIES_BUCKET}/${imdb_id}/kodi.strm -
 }
 
+function kodi_nfo() {
+  imdb_id=$1
+  aws s3 cp s3://${MOVIES_BUCKET}/${imdb_id}/kodi.nfo -
+}
+
 function poster() {
   imdb_id=$1
   aws s3 cp s3://${MOVIES_BUCKET}/${imdb_id}/poster.jpg -

@@ -7,6 +7,7 @@ function oneTimeSetUp() {
   sample_src="https://web.archive.org/web/http://www.sample-videos.com/video/mp4/720/big_buck_bunny_720p_1mb.mp4"
   [[ -f $(dirname $0)/mp4/sample.mp4 ]] || wget ${sample_src} -O ${sample_file}
   aws s3 rm s3://${MOVIES_BUCKET}/${imdb_id}/ffprobe.txt
+  aws s3 rm s3://${MOVIES_BUCKET}/${imdb_id}/kodi.nfo
   aws s3 rm s3://${MOVIES_BUCKET}/${imdb_id}/kodi.strm
   aws s3 rm s3://${MOVIES_BUCKET}/${imdb_id}/omdb.json
   aws s3 rm s3://${MOVIES_BUCKET}/${imdb_id}/poster.jpg
@@ -34,6 +35,11 @@ function test_kodi_strm() {
 function test_poster() {
   meta="/dev/stdin: JPEG image data, JFIF standard 1.01, resolution (DPI), density 96x96, segment length 16, baseline, precision 8, 326x475, frames 3"
   assertEquals 'is jpeg' "${meta}"  "$(poster ${imdb_id} | file -)"
+}
+
+function test_kodi_nfo() {
+  meta="something"
+  assertEquals 'exists' "${meta}"  "$(kodi_nfo ${imdb_id} | file -)"
 }
 
 source $(dirname $0)/shunit/src/shunit2
