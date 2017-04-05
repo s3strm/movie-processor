@@ -40,7 +40,6 @@ def lambda_handler(event, context):
         for y in json.loads(record["Sns"]["Message"])["Records"]:
             bucket = y["s3"]["bucket"]["name"]
             key = y["s3"]["object"]["key"]
-            region = y["awsRegion"]
             imdb_id = key.split("/")[0]
             url = _url(bucket,key)
             ffprobe_key = "{}/ffprobe.txt".format(imdb_id)
