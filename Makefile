@@ -40,6 +40,9 @@ upload:
 docker_image:
 	docker build . -t ${DOCKER_TAG}
 
+integration_test:
+	./test/test_processor
+
 test: docker_image
 	docker run \
 		-e AWS_SECRET_ACCESS_KEY \
