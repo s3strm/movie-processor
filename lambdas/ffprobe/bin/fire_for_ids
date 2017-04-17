@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-STACK_NAME="s3strm-ffprobe"
+STACK_NAME="s3strm-movie-processor"
 LAMBDA_ARN=$(
   aws cloudformation describe-stacks \
     --stack-name "${STACK_NAME}" \
-    --query 'Stacks[].Outputs[?OutputKey==`LambdaArn`].OutputValue' \
+    --query 'Stacks[].Outputs[?OutputKey==`FFprobeLambdaArn`].OutputValue' \
     --output "text"
 )
 
