@@ -4,6 +4,7 @@ imdb_id="tt0000000"
 
 function oneTimeSetUp() {
   sample_file="$(dirname $0)/mp4/sample.mp4"
+  sample_custom_poster="$(dirname $0)/mp4/sample_custom_poster.jpg"
   sample_src="https://web.archive.org/web/http://www.sample-videos.com/video/mp4/720/big_buck_bunny_720p_1mb.mp4"
   [[ -f $(dirname $0)/mp4/sample.mp4 ]] || wget ${sample_src} -O ${sample_file}
   aws s3 rm s3://${MOVIES_BUCKET}/${imdb_id}/ffprobe.txt
@@ -11,6 +12,7 @@ function oneTimeSetUp() {
   aws s3 rm s3://${MOVIES_BUCKET}/${imdb_id}/kodi.strm
   aws s3 rm s3://${MOVIES_BUCKET}/${imdb_id}/omdb.json
   aws s3 rm s3://${MOVIES_BUCKET}/${imdb_id}/poster.jpg
+  aws s3 rm s3://${MOVIES_BUCKET}/${imdb_id}/poster-custom.jpg
   aws s3 cp ${sample_file} s3://${MOVIES_BUCKET}/${imdb_id}/video.mp4
   echo "Waiting for Lambda's to fire"
   sleep 5
@@ -42,7 +44,7 @@ function test_kodi_nfo() {
   assertTrue 'has id'        'echo "${content}" | grep "<id>tt0000000</id>"'
   assertTrue 'has year'      'echo "${content}" | grep "<year>1894</year>"'
   assertTrue 'has runtime'   'echo "${content}" | grep "<runtime>1 min</runtime>"'
-  assertTrue 'has thumb'     'echo "${content}" | grep "<thumb>http://s3-ap-southeast-2.amazonaws.com/s3strm-movies/tt0000000/poster.jpeg</thumb>"'
+  assertTrue 'has thumb'     'echo "${content}" | grep "<thumb>http://s3-ap-southeast-2.amazonaws.com/s3strm-movies/tt0000000/poster.jpg</thumb>"'
   assertTrue 'has rating'    'echo "${content}" | grep "<rating>5.9</rating>"'
   assertTrue 'has genre'     'echo "${content}" | grep "<genre>Documentary</genre><genre>Short</genre>"'
   assertTrue 'has director'  'echo "${content}" | grep "<director>William K.L. Dickson</director>"'
@@ -50,6 +52,14 @@ function test_kodi_nfo() {
   assertTrue 'has width'     'echo "${content}" | grep "<width>1280</width>"'
   assertTrue 'has height'    'echo "${content}" | grep "<height>720</height>"'
   assertTrue 'has duration'  'echo "${content}" | grep "<duration>0</duration>"'
+}
+
+function test_kodi_nfo_custom_image() {
+  aws s3 cp ${sample_custom_poster} s3://${MOVIES_BUCKET}/${imdb_id}/poster-custom.jpg
+  aws s3 cp ${sample_file} s3://${MOVIES_BUCKET}/${imdb_id}/video.mp4
+  sleep 5
+  content="$(kodi_nfo ${imdb_id})"
+  assertTrue 'has custom poster'     'echo "${content}" | grep "<thumb>http://s3-ap-southeast-2.amazonaws.com/s3strm-movies/tt0000000/poster-custom.jpg</thumb>"'
 }
 
 source $(dirname $0)/shunit/src/shunit2
