@@ -27,7 +27,8 @@ def poster(imdb_id):
     s3.Bucket(os.environ["MOVIES_BUCKET"]).put_object(
             Key=key,
             Body=body,
-            ACL="public-read"
+            ContentType='image/jpeg',
+            ACL="public-read",
             )
 
 def lambda_handler(event, context):
