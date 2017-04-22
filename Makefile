@@ -7,6 +7,7 @@ OMDB_POSTERS_KEY = $(shell make -C lambdas/omdb_posters/src lambda_key)
 OMDB_KEY = $(shell make -C lambdas/omdb/src lambda_key)
 KODI_STRM_KEY = $(shell make -C lambdas/kodi_strm/src lambda_key)
 KODI_NFO_KEY = $(shell make -C lambdas/kodi_nfo/src lambda_key)
+POSTER_KEY = $(shell make -C lambdas/poster/src lambda_key)
 
 DOCKER_TAG = s3strm-ffprobe
 export AWS_SECRET_ACCESS_KEY
@@ -25,6 +26,7 @@ deploy: upload
 	    ParameterKey=OMDbCodeKey,ParameterValue=${OMDB_KEY}                 \
 	    ParameterKey=KodiSTRMCodeKey,ParameterValue=${KODI_STRM_KEY}        \
 	    ParameterKey=KodiNFOCodeKey,ParameterValue=${KODI_NFO_KEY}          \
+	    ParameterKey=PosterCodeKey,ParameterValue=${POSTER_KEY}             \
 	  --capabilities CAPABILITY_IAM                                         \
 	  2>&1
 	@aws cloudformation wait stack-${ACTION}-complete \
@@ -36,6 +38,7 @@ upload:
 	@make -C lambdas/omdb/src upload
 	@make -C lambdas/kodi_strm/src upload
 	@make -C lambdas/kodi_nfo/src upload
+	@make -C lambdas/poster/src upload
 
 docker_image:
 	docker build . -t ${DOCKER_TAG}
