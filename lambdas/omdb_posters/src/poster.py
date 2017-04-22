@@ -22,7 +22,7 @@ def poster(imdb_id):
         raise Exception(req.content)
 
     body = req.content
-    key = '{}/poster.jpg'.format(imdb_id)
+    key = '{}/poster-omdb.jpg'.format(imdb_id)
     s3 = boto3.resource('s3')
     s3.Bucket(os.environ["MOVIES_BUCKET"]).put_object(
             Key=key,
