@@ -35,7 +35,7 @@ def lambda_handler(event,context):
             os.environ["MOVIES_BUCKET"],
             "{}/poster.jpg".format(event["imdb_id"]),
             ExtraArgs={
-                'ContentType': "image/jpeg",
+                'ContentType': 'image/jpeg',
                 'ACL': "public-read",
             }
         )
