@@ -5,7 +5,7 @@ import json
 import os
 
 def strm(imdb_id):
-    body = "{}/url?id={}".format(os.environ["API_GATEWAY_URL"], imdb_id)
+    body = "{}/url?id={}\n".format(os.environ["API_GATEWAY_URL"], imdb_id)
     key = '{}/kodi.strm'.format(imdb_id)
     print("strm is: {}".format(body))
     s3 = boto3.resource('s3')
