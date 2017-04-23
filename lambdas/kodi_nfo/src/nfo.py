@@ -17,28 +17,11 @@ def read_s3_key(key):
     object = client.get_object(Bucket=os.environ["MOVIES_BUCKET"], Key=key)
     return object["Body"].read()
 
-def has_custom_poster(imdb_id):
-    client = boto3.client('s3')
-    try:
-        client.get_object(
-                Bucket=os.environ["MOVIES_BUCKET"],
-                Key="{}/poster-custom.jpg".format(imdb_id),
-                )
-    except:
-        return False
-    return True
-
 def poster_url(imdb_id):
-    if has_custom_poster(imdb_id):
-        filename = "poster-custom.jpg"
-    else:
-        filename = "poster.jpg"
-
-    return("http://s3-{}.amazonaws.com/{}/{}/{}".format(
+    return("http://s3-{}.amazonaws.com/{}/{}/poster.jpg".format(
               os.environ["MOVIES_BUCKET_REGION"],
               os.environ["MOVIES_BUCKET"],
               imdb_id,
-              filename,
           ))
 
 def tag(key,values):
