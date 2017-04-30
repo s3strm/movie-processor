@@ -3,14 +3,21 @@ import ast
 import boto3
 import json
 import os
+import re
 
-def title(imdb_id):
+def EXTINF(imdb_id):
     key = "{}/omdb.json".format(imdb_id)
-    body = boto3.client('s3').get_object(Bucket=os.environ["MOVIES_BUCKET"], Key=key)["Body"].read()
-    return json.loads(body)["Title"]
+    body = json.loads(
+        boto3.client('s3').get_object(Bucket=os.environ["MOVIES_BUCKET"], Key=key)["Body"].read()
+    )
+
+    return "{},{}".format(
+      int(re.sub("[^0-9]", "", body["Runtime"])) * 60,
+      body["Title"],
+    )
 
 def strm(imdb_id):
-    extinf = "#EXTINF:{}".format(title(imdb_id))
+    extinf = "#EXTINF:{}".format(EXTINF(imdb_id))
     url = "https://{}/movie/{}/stream|User-Agent={}".format(
         os.environ["API_GATEWAY_DOMAIN"],
         imdb_id,
