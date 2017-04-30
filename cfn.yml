@@ -89,7 +89,8 @@ Resources:
       Environment:
         Variables:
           MOVIES_BUCKET: !ImportValue s3strm-movies-bucket
-          API_GATEWAY_URL: !ImportValue s3strm-api-gateway-url
+          API_GATEWAY_DOMAIN: !ImportValue s3strm-api-gateway-domain
+          API_KEY: !ImportValue s3strm-api-key
       Description : Generate a kodi.strm file
       FunctionName : s3strm-kodi-strm
       Handler : strm.lambda_handler
@@ -244,7 +245,7 @@ Resources:
     Properties:
       Endpoint: !GetAtt KodiSTRMLambda.Arn
       Protocol: "lambda"
-      TopicArn: !ImportValue s3strm-video-created-topic
+      TopicArn: !ImportValue s3strm-meta-created-topic
 
   KodiNFOSubscription:
     Type: AWS::SNS::Subscription

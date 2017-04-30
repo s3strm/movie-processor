@@ -30,8 +30,8 @@ function test_omdb() {
 
 function test_kodi_strm() {
   assertTrue 'is https'     "kodi_strm ${imdb_id} | grep ^https"
-  assertTrue 'has id'       "kodi_strm ${imdb_id} | grep id=tt0000000$"
-  assertTrue 'from prod'    "kodi_strm ${imdb_id} | grep \/prod\/"
+  assertTrue 'has id'       "kodi_strm ${imdb_id} | grep tt0000000"
+  assertTrue 'has key'      "kodi_strm ${imdb_id} | grep User-Agent=.*$"
 }
 
 function test_poster() {

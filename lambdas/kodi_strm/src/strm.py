@@ -11,7 +11,12 @@ def title(imdb_id):
 
 def strm(imdb_id):
     extinf = "#EXTINF:{}".format(title(imdb_id))
-    url = "{}/url?id={}\n".format(os.environ["API_GATEWAY_URL"], imdb_id)
+    url = "https://{}/movie/{}/stream|User-Agent={}".format(
+        os.environ["API_GATEWAY_DOMAIN"],
+        imdb_id,
+        os.environ["API_KEY"],
+    )
+
     body = "\n".join([extinf, url])
     key = '{}/kodi.strm'.format(imdb_id)
     s3 = boto3.resource('s3')
