@@ -4,10 +4,16 @@ import boto3
 import json
 import os
 
+def title(imdb_id):
+    key = "{}/omdb.json".format(imdb_id)
+    body = boto3.client('s3').get_object(Bucket=os.environ["MOVIES_BUCKET"], Key=key)["Body"].read()
+    return json.loads(body)["Title"]
+
 def strm(imdb_id):
-    body = "{}/url?id={}\n".format(os.environ["API_GATEWAY_URL"], imdb_id)
+    extinf = "#EXTINF:{}".format(title(imdb_id))
+    url = "{}/url?id={}\n".format(os.environ["API_GATEWAY_URL"], imdb_id)
+    body = "\n".join([extinf, url])
     key = '{}/kodi.strm'.format(imdb_id)
-    print("strm is: {}".format(body))
     s3 = boto3.resource('s3')
     s3.Bucket(os.environ["MOVIES_BUCKET"]).put_object(Key=key, Body=body, ACL="private")
 
@@ -26,5 +32,8 @@ if __name__ == "__main__":
         sample_event_json=myfile.read()
     event = json.loads(sample_event_json)
     lambda_handler(event, {})
-
-####
+    s3 = boto3.client('s3')
+    print("\nThe Document is:\n")
+    print(
+        s3.get_object(Bucket=os.environ["MOVIES_BUCKET"], Key="tt0000000/kodi.strm")["Body"].read()
+    )
