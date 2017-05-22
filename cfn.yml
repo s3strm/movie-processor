@@ -71,6 +71,7 @@ Resources:
       Environment:
         Variables:
           MOVIES_BUCKET: !ImportValue s3strm-movies-bucket
+          OMDB_API_KEY: !ImportValue s3strm-omdb-api-key
       Description : Generate a omdb.json file
       FunctionName : s3strm-omdb
       Handler : omdb.lambda_handler
