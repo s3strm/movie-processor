@@ -1,4 +1,4 @@
 *
 !.gitignore
-!poster.py
+!omdb.py
 !Makefile
