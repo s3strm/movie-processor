@@ -48,7 +48,7 @@ function test_kodi_nfo() {
   assertTrue 'has rating'    'echo "${content}" | grep "<rating>5.9</rating>"'
   assertTrue 'has genre'     'echo "${content}" | grep "<genre>Documentary</genre><genre>Short</genre>"'
   assertTrue 'has director'  'echo "${content}" | grep "<director>William K.L. Dickson</director>"'
-  assertTrue 'has actor'     'echo "${content}" | grep "<actor>Carmencita</actor>"'
+  assertTrue 'has actor'     'echo "${content}" | grep "<actor><name>Carmencita</name></actor>"'
   assertTrue 'has width'     'echo "${content}" | grep "<width>1280</width>"'
   assertTrue 'has height'    'echo "${content}" | grep "<height>720</height>"'
   assertTrue 'has duration'  'echo "${content}" | grep "<duration>0</duration>"'

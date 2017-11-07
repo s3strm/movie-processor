@@ -34,6 +34,17 @@ def tag(key,values):
         xml.append(d)
     return xml
 
+def actor_tag(values):
+    xml = BeautifulSoup("", "html.parser")
+    for value in values:
+        value = str(value)
+        d = BeautifulSoup("", "html.parser")
+        d.append(d.new_tag("actor"))
+        d.find("actor").append(d.new_tag("name"))
+        d.find("name").append(value.strip())
+        xml.append(d)
+    return xml
+
 def ffprobe_value(regex, stream):
     for line in stream.split("\n"):
         if re.match(regex, line) is not None:
@@ -91,7 +102,7 @@ def nfo(imdb_id):
             "plot": tag("plot", [ omdb_data["Plot"] ]),
             "genre": tag("genre", omdb_data["Genre"].split(",")),
             "director": tag("director", omdb_data["Director"].split(",")),
-            "actor": tag("actor", omdb_data["Actors"].split(",")),
+            "actor": actor_tag(omdb_data["Actors"].split(",")),
             "mpaa": tag("mpaa", [ omdb_data["Rated"] ] ),
             "width": tag("width", [ ffprobe_value(r"^width=", ffprobe_streams[1]) ]),
             "height": tag("height", [ ffprobe_value(r"^height=", ffprobe_streams[1]) ]),
