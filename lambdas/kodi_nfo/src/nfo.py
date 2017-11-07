@@ -69,6 +69,15 @@ def nfo(imdb_id):
 
     ffprobe_streams = ffprobe_data.split("[STREAM]")
 
+
+    # FIXME: this is horrible
+    try:
+        duration = int(float(ffprobe_value(r"^duration=", ffprobe_streams[1])) / 60 )
+    except:
+        duration = 0
+
+    import pdb; pdb.set_trace();
+
     xml = '''
         <movie>
           {title}
@@ -106,8 +115,10 @@ def nfo(imdb_id):
             "mpaa": tag("mpaa", [ omdb_data["Rated"] ] ),
             "width": tag("width", [ ffprobe_value(r"^width=", ffprobe_streams[1]) ]),
             "height": tag("height", [ ffprobe_value(r"^height=", ffprobe_streams[1]) ]),
-            "duration": tag("duration", [ int( float(ffprobe_value(r"^duration=", ffprobe_streams[1])) / 60 ) ]),
+            "duration": tag("duration", [ duration ] ),
         })
+
+    print(xml)
 
     return xml
 
@@ -123,6 +134,7 @@ def lambda_handler(event, context):
     return True
 
 if __name__ == "__main__":
+    #with open('sample_event/tt0800369.json', 'r') as myfile:
     with open('sample_event/tt0000000.json', 'r') as myfile:
         sample_event_json=myfile.read()
     event = json.loads(sample_event_json)
