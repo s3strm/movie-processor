@@ -11,7 +11,11 @@ API_DOMAIN=$(
     --output text
 )
 
-IMDB_IDS=$(curl -H "X-Api-Key: ${API_KEY}" https://${API_DOMAIN}/movie/ 2> /dev/null | jq -r .[])
+if [[ $# -eq 0 ]]; then
+  IMDB_IDS=$(curl -H "X-Api-Key: ${API_KEY}" https://${API_DOMAIN}/movie/ 2> /dev/null | jq -r .[])
+else
+  IMDB_IDS=$@
+fi
 
 for imdb_id in ${IMDB_IDS}; do
   curl -H "X-Api-Key: ${API_KEY}" https://${API_DOMAIN}/movie/${imdb_id}/refeed
