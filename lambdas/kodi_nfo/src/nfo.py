@@ -76,7 +76,7 @@ def nfo(imdb_id):
     except:
         duration = 0
 
-    import pdb; pdb.set_trace();
+    #import pdb; pdb.set_trace();
 
     xml = '''
         <movie>
