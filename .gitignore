@@ -1,3 +1,4 @@
 settings.inc
 cfn/parameters.txt
 cfn/lambda/*
+test/mp4/*

@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+STACK_NAME="s3strm-movie-processor"
+LAMBDA_ARN=$(
+  aws cloudformation describe-stacks \
+    --stack-name "${STACK_NAME}" \
+    --query 'Stacks[].Outputs[?OutputKey==`FFprobeLambdaArn`].OutputValue' \
+    --output "text"
+)
+
+payload="$($(dirname $0)/sample_event $@)"
+aws lambda invoke \
+  --function-name "${LAMBDA_ARN}" \
+  --invocation-type "Event" \
+  --payload "${payload}" \
+  /dev/null
